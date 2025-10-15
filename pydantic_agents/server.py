@@ -96,10 +96,14 @@ async def startup_event():
                 print(f"  Registered: {name} (no initialization needed)")
 
         print(f"All agents initialized. Default: {DEFAULT_AGENT}")
+        print(f"Registered agents: {registry.list()}")
+        print("[STARTUP] Registering /community/pulse-response endpoint...")
 
     except Exception as e:
         print(f"ERROR initializing agents: {e}")
         raise
+
+print("[MODULE] server.py loaded, defining routes...")
 
 class MessageRequest(BaseModel):
     message: str
@@ -228,9 +232,12 @@ async def generate_pulse_response(request: PulseResponseRequest):
     """
     Generate an authentic Pulse B response using the Community Member Agent.
     """
+    print(f"[ENDPOINT] /community/pulse-response called with: {request.member_name}")
     try:
         community_agent = registry.get("community-member")
+        print(f"[AGENT] Got community agent: {community_agent}")
         if not community_agent:
+            print("[ERROR] Community member agent not found in registry")
             raise HTTPException(status_code=404, detail="Community member agent not found")
 
         # Generate response
@@ -240,13 +247,18 @@ async def generate_pulse_response(request: PulseResponseRequest):
             member_name=request.member_name
         )
 
+        print(f"[RESPONSE] Generated response: {response}")
+
         return PulseResponseResponse(
-            text=response.text,
-            tone=response.tone,
+            text=response["text"],
+            tone=response["tone"],
             member_name=request.member_name
         )
 
     except Exception as e:
+        import traceback
+        print(f"[ERROR] Exception generating response: {e}")
+        print(f"[ERROR] Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Error generating response: {str(e)}")
 
 @app.post("/chat/stream")

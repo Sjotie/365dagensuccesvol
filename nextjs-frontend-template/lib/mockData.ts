@@ -148,6 +148,22 @@ export function savePulseBResponse(text: string): void {
   }
 }
 
+export function addCommunityResponse(memberName: string, text: string, tone?: string): void {
+  if (currentPulse.type === "B") {
+    const newResponse = {
+      id: `resp_ai_${Date.now()}`,
+      userId: `user_ai_${memberName.toLowerCase()}`,
+      userName: memberName,
+      text,
+      timestamp: new Date().toISOString(),
+    }
+    currentPulse = {
+      ...currentPulse,
+      responses: [newResponse, ...(currentPulse.responses || [])],
+    }
+  }
+}
+
 // Mock conversations data
 export const mockConversations: Conversation[] = [
   {

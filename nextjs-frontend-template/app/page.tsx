@@ -45,6 +45,7 @@ export default function DashboardPage() {
   const [rsvpLoading, setRsvpLoading] = useState(false)
   const [responseText, setResponseText] = useState("")
   const [responseLoading, setResponseLoading] = useState(false)
+  const [aiSimulating, setAiSimulating] = useState(false)
 
   useEffect(() => {
     async function fetchData() {
@@ -125,6 +126,35 @@ export default function DashboardPage() {
       console.error("Failed to save response:", error)
     } finally {
       setResponseLoading(false)
+    }
+  }
+
+  const handleSimulateActivity = async () => {
+    if (!pulse || pulse.type !== "B") return
+
+    setAiSimulating(true)
+
+    try {
+      const response = await fetch("/api/community/generate-response", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ritualName: `${pulse.ritual.letter} van ${pulse.ritual.name}`,
+          ritualQuestion: pulse.ritual.question,
+          memberName: ["Thomas", "Sophie", "Jamal", "Emma", "David"][Math.floor(Math.random() * 5)],
+        }),
+      })
+
+      if (response.ok) {
+        // Refresh pulse data to get updated responses
+        const pulseRes = await fetch("/api/pulse/active")
+        const pulseData = await pulseRes.json()
+        setPulse(pulseData)
+      }
+    } catch (error) {
+      console.error("Failed to simulate activity:", error)
+    } finally {
+      setAiSimulating(false)
     }
   }
 
@@ -342,9 +372,27 @@ export default function DashboardPage() {
                   {/* Community Responses */}
                   {pulse.responses && pulse.responses.length > 0 && (
                     <div>
-                      <h4 className="text-lg font-semibold text-slate-900 mb-4">
-                        Wat anderen accepteerden deze week
-                      </h4>
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-slate-900">
+                          Wat anderen accepteerden deze week
+                        </h4>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleSimulateActivity}
+                          disabled={aiSimulating}
+                          className="text-xs border-orange-200 text-orange-600 hover:bg-orange-50"
+                        >
+                          {aiSimulating ? (
+                            <>
+                              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                              AI denkt...
+                            </>
+                          ) : (
+                            "🤖 Simuleer activiteit"
+                          )}
+                        </Button>
+                      </div>
                       <div className="space-y-3">
                         {pulse.responses.map((response) => {
                           const isOwnResponse = response.userId === user.id

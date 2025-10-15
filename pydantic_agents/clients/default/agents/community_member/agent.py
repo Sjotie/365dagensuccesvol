@@ -100,11 +100,12 @@ Antwoord in JSON format:
 
         # Try to parse JSON from the response
         import json
+        response_text = str(result.output) if hasattr(result, 'output') else str(result)
         try:
-            return json.loads(str(result.data))
+            return json.loads(response_text)
         except:
             # Fallback: return simple structure
-            return {"text": str(result.data), "tone": "warm"}
+            return {"text": response_text, "tone": "warm"}
 
     @staticmethod
     async def generate_buddy_message(
