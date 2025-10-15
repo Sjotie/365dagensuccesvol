@@ -50,18 +50,19 @@ Multi-agent AI system built with TwoFeetUp BaseCamp framework. Features speciali
 
 - **Deployment:** Railway (Docker)
 - **Git workflow:** `main` branch deploys to Railway, use `feature/**name**` for branches
-- **Package manager:** Bun (for frontend), pip (for backend)
+- **Package manager:** npm (for frontend), pip (for backend)
+  - **Note:** Using npm instead of Bun (Bun not available in current environment)
 
 ### Frontend (Next.js)
 
 - **Frontend:** Next.js (App Router) + shadcn/ui + Tailwind
 - **Commands:**
   - `cd nextjs-frontend-template`
-  - `bun install` - Install dependencies
-  - `bun dev` - Start dev server
-  - `bun run build` - Build for production
-  - `bun run lint` - Lint code
-  - `bun run type-check` - Type checking
+  - `npm install` - Install dependencies
+  - `npm run dev` - Start dev server
+  - `npm run build` - Build for production
+  - `npm run lint` - Lint code
+  - `npm run type-check` - Type checking
 
 ### Backend (Python + Pydantic AI)
 
@@ -147,9 +148,9 @@ python -m pydantic_agents.server
 
 # Frontend setup (in separate terminal)
 cd nextjs-frontend-template
-bun install
+npm install
 cp .env.example .env.local
-bun dev
+npm run dev
 ```
 
 1. Create feature branch: `feature/**name**`
@@ -186,4 +187,5 @@ bun dev
 
 This section documents any deviations from TwoFeetUp defaults. Each deviation should link to a detailed ADR in `/docs/adr/`.
 
-Currently no documented deviations.
+**Current deviations:**
+- **Package manager:** Using `npm` instead of `bun` for frontend - Bun is not available in current development environment
