@@ -11,8 +11,8 @@ import asyncio
 import sys
 from dotenv import load_dotenv
 from typing import Dict, Optional, List
-from pocketbase import PocketBase
-from pocketbase.client import ClientResponseError
+# from pocketbase import PocketBase  # Placeholder - not using PocketBase yet
+# from pocketbase.client import ClientResponseError
 from pydantic_ai.messages import ModelMessage, ModelRequest, ModelResponse, UserPromptPart, TextPart
 from pydantic_ai.messages import (
     PartStartEvent,
@@ -29,8 +29,8 @@ load_dotenv()
 
 app = FastAPI(title="TwoFeetUp Agent API", version="0.2.0")
 
-# Global PocketBase client
-pb_client: Optional[PocketBase] = None
+# Global PocketBase client (placeholder)
+pb_client: Optional[any] = None  # Placeholder - will use PocketBase later
 
 # Agent registry
 class AgentRegistry:
@@ -63,24 +63,11 @@ DEFAULT_AGENT = os.getenv("DEFAULT_AGENT", "event-planner")
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize all agents and PocketBase on startup."""
+    """Initialize all agents on startup."""
     global pb_client
 
-    print("Initializing PocketBase client...")
-    try:
-        pb_url = os.getenv("POCKETBASE_URL", "http://127.0.0.1:8090")
-        pb_admin_email = os.getenv("POCKETBASE_ADMIN_EMAIL")
-        pb_admin_password = os.getenv("POCKETBASE_ADMIN_PASSWORD")
-
-        if not pb_admin_email or not pb_admin_password:
-            print("WARNING: POCKETBASE_ADMIN_EMAIL or POCKETBASE_ADMIN_PASSWORD not set. Message history will not work.")
-        else:
-            pb_client = PocketBase(pb_url)
-            pb_client.admins.auth_with_password(pb_admin_email, pb_admin_password)
-            print(f"  PocketBase connected: {pb_url}")
-    except Exception as e:
-        print(f"ERROR initializing PocketBase: {e}")
-        print("Continuing without message history support...")
+    print("Skipping PocketBase initialization (placeholder for now)...")
+    pb_client = None  # Placeholder
 
     print("Initializing agents...")
     try:
@@ -89,6 +76,7 @@ async def startup_event():
         from pydantic_agents.clients.default.agents.event_planner.agent import event_planner_agent
         from pydantic_agents.clients.default.agents.event_contract_assistant.agent import event_contract_assistant_agent
         from pydantic_agents.clients.default.agents.marketing_communicatie.agent import marketing_communicatie_agent
+        from pydantic_agents.clients.default.agents.community_member import CommunityMemberAgent
 
         # Register agents (using hyphenated names for frontend compatibility)
         registry.register("contract-clearance", contract_clearance_agent)
@@ -96,10 +84,16 @@ async def startup_event():
         registry.register("event-contract-assistant", event_contract_assistant_agent)
         registry.register("marketing-communicatie", marketing_communicatie_agent)
 
-        # Initialize all agents
+        # Register community member (no wrapper, direct class)
+        registry.register("community-member", CommunityMemberAgent)
+
+        # Initialize all agents (except community-member which doesn't need init)
         for name, agent in registry.items():
-            await agent.initialize()
-            print(f"  Initialized: {name}")
+            if name != "community-member" and hasattr(agent, 'initialize'):
+                await agent.initialize()
+                print(f"  Initialized: {name}")
+            elif name == "community-member":
+                print(f"  Registered: {name} (no initialization needed)")
 
         print(f"All agents initialized. Default: {DEFAULT_AGENT}")
 
@@ -218,6 +212,42 @@ async def chat(request: MessageRequest):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+class PulseResponseRequest(BaseModel):
+    ritual_name: str
+    ritual_question: str
+    member_name: str = "Thomas"
+
+class PulseResponseResponse(BaseModel):
+    text: str
+    tone: str
+    member_name: str
+
+@app.post("/community/pulse-response", response_model=PulseResponseResponse)
+async def generate_pulse_response(request: PulseResponseRequest):
+    """
+    Generate an authentic Pulse B response using the Community Member Agent.
+    """
+    try:
+        community_agent = registry.get("community-member")
+        if not community_agent:
+            raise HTTPException(status_code=404, detail="Community member agent not found")
+
+        # Generate response
+        response = await community_agent.generate_pulse_response(
+            ritual_name=request.ritual_name,
+            ritual_question=request.ritual_question,
+            member_name=request.member_name
+        )
+
+        return PulseResponseResponse(
+            text=response.text,
+            tone=response.tone,
+            member_name=request.member_name
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating response: {str(e)}")
 
 @app.post("/chat/stream")
 async def chat_stream(request: MessageRequest):
