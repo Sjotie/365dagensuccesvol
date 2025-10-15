@@ -1,0 +1,20 @@
+# Core dependencies
+fastapi>=0.115.0
+uvicorn>=0.30.0
+pydantic>=2.0.0
+pydantic-ai>=0.0.1
+
+# Database
+asyncpg>=0.29.0
+psycopg2-binary>=2.9.0
+pocketbase>=0.11.0
+
+# Environment
+python-dotenv>=1.0.0
+
+# Logging
+structlog>=24.0.0
+
+# BaseCamp framework
+# Install with: pip install -e ./pydantic-agents-core
+# -e ./pydantic-agents-core

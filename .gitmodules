@@ -1,0 +1,3 @@
+[submodule "pydantic-agents-core"]
+	path = pydantic-agents-core
+	url = https://github.com/TwoFeetUp/BaseCamp.git
