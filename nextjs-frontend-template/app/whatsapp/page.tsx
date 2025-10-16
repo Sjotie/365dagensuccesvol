@@ -165,43 +165,53 @@ export default function WhatsAppLandingPage() {
     <div className="min-h-screen bg-white">
       {/* Top Navigation */}
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img src="/365-logo.svg" alt="365 Hub" className="h-10 w-10" />
-              <span className="text-xl font-bold text-slate-900">365 Hub — WhatsApp Versie</span>
+        <div className="container mx-auto px-4 md:px-6 py-2 md:py-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <img src="/365-logo.svg" alt="365 Hub" className="h-8 md:h-10 w-8 md:w-10" />
+              <span className="text-sm md:text-xl font-bold text-slate-900 hidden sm:inline">365 Hub — WhatsApp Versie</span>
+              <span className="text-sm font-bold text-slate-900 sm:hidden">WhatsApp</span>
             </div>
             <Button
               variant="outline"
               onClick={() => router.push("/")}
-              className="border-[#FF0837] text-[#FF0837] hover:bg-[#FFF0F5]"
+              className="border-[#FF0837] text-[#FF0837] hover:bg-[#FFF0F5] text-xs md:text-sm px-2 md:px-4 py-1 md:py-2 h-auto"
             >
-              Terug naar Hub →
+              <span className="hidden sm:inline">Terug naar Hub →</span>
+              <span className="sm:hidden">Hub →</span>
             </Button>
           </div>
         </div>
       </nav>
 
       {/* Scenario Navigation */}
-      <div className="sticky top-[73px] z-40 bg-white border-b border-slate-200 shadow-sm">
-        <div className="container mx-auto px-6 py-3">
-          <div className="flex flex-wrap gap-2 justify-center">
-            {scenarios.map((scenario) => (
-              <button
-                key={scenario.id}
-                onClick={() => {
-                  setActiveScenario(scenario.id)
-                  document.getElementById(scenario.anchor)?.scrollIntoView({ behavior: "smooth" })
-                }}
-                className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeScenario === scenario.id
-                    ? "bg-[#FF0837] text-white"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
-              >
-                {scenario.label}
-              </button>
-            ))}
+      <div className="sticky top-[50px] md:top-[73px] z-40 bg-white border-b border-slate-200 shadow-sm">
+        <div className="relative">
+          {/* Left gradient fade */}
+          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+
+          {/* Right gradient fade */}
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2 px-6 py-3 min-w-max snap-x snap-mandatory">
+              {scenarios.map((scenario) => (
+                <button
+                  key={scenario.id}
+                  onClick={() => {
+                    setActiveScenario(scenario.id)
+                    document.getElementById(scenario.anchor)?.scrollIntoView({ behavior: "smooth" })
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors snap-center ${
+                    activeScenario === scenario.id
+                      ? "bg-[#FF0837] text-white"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {scenario.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
