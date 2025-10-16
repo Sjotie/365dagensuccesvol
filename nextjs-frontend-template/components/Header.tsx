@@ -12,14 +12,7 @@ export function Header({ showLogo = true, rightContent }: { showLogo?: boolean; 
         <div className="flex items-center justify-between">
           {showLogo ? (
             <div className="flex items-center gap-3">
-              <div className="relative">
-                {/* Banner ribbon at top */}
-                <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-6 h-2 bg-[#FF0837] rounded-t" />
-                {/* Main badge */}
-                <div className="w-10 h-10 bg-[#FF0837] rounded-b flex items-center justify-center relative z-10">
-                  <span className="text-white font-bold text-sm">365</span>
-                </div>
-              </div>
+              <img src="/365-logo.svg" alt="365 Hub" className="h-10 w-10" />
               <span className="text-xl font-bold text-slate-900">365 Hub</span>
             </div>
           ) : null}

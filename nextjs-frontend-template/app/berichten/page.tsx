@@ -130,12 +130,12 @@ export default function BerichtenPage() {
     <div className="min-h-screen bg-white">
       {/* Top Navigation with Logo */}
       <Header
-        showLogo={false}
+        showLogo={true}
         rightContent={
           <div className="flex items-center gap-4">
             <button
               onClick={() => router.push("/")}
-              className="text-[#FF0837] hover:text-[#E6061F] -ml-4"
+              className="text-[#FF0837] hover:text-[#E6061F]"
             >
               <ArrowLeft className="h-6 w-6" />
             </button>
