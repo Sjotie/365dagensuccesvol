@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Calendar, Users, Heart, MapPin, Clock, User, Coffee, Loader2 } from "lucide-react"
 import { downloadICS } from "@/lib/ics"
 import type { PulseA, PulseB, User as UserType, UpcomingMeetup, ActivePulse, Conversation } from "@/lib/types"
+import { WarmthWidget } from "@/components/WarmthWidget"
 
 // VREDE emoji mapping
 const VREDE_EMOJIS = {
@@ -46,6 +47,8 @@ export default function DashboardPage() {
   const [responseText, setResponseText] = useState("")
   const [responseLoading, setResponseLoading] = useState(false)
   const [aiSimulating, setAiSimulating] = useState(false)
+  const [buddyMatching, setBuddyMatching] = useState(false)
+  const [meetupRegistering, setMeetupRegistering] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchData() {
@@ -158,6 +161,55 @@ export default function DashboardPage() {
     }
   }
 
+  const handleBuddyMatch = async () => {
+    setBuddyMatching(true)
+
+    try {
+      const response = await fetch("/api/buddy/match", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          day: "za",
+          time: "10:00",
+        }),
+      })
+
+      if (response.ok) {
+        // Redirect to messages to see the new buddy match
+        router.push("/berichten")
+      }
+    } catch (error) {
+      console.error("Failed to create buddy match:", error)
+    } finally {
+      setBuddyMatching(false)
+    }
+  }
+
+  const handleMeetupRSVP = async (meetupId: string) => {
+    setMeetupRegistering(meetupId)
+
+    try {
+      const response = await fetch("/api/meetups/rsvp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ meetupId }),
+      })
+
+      if (response.ok) {
+        // Update local state to mark meetup as registered
+        setMeetups((prevMeetups) =>
+          prevMeetups.map((m) =>
+            m.id === meetupId ? { ...m, userRegistered: true, attending: m.attending + 1 } : m
+          )
+        )
+      }
+    } catch (error) {
+      console.error("Failed to register for meetup:", error)
+    } finally {
+      setMeetupRegistering(null)
+    }
+  }
+
   const handleAddToCalendar = (timeSlot: "wo" | "za") => {
     if (!pulse || pulse.type !== "A") return
 
@@ -201,42 +253,50 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#FF0837]" />
       </div>
     )
   }
 
   if (!user || !pulse) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <p className="text-slate-600">Er is iets misgegaan. Probeer het opnieuw.</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-      {/* Simple Top Navigation */}
-      <nav className="bg-white/80 backdrop-blur-sm border-b border-orange-100 sticky top-0 z-50">
+    <div className="min-h-screen bg-white">
+      {/* Top Navigation - 365dagensuccesvol style */}
+      <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-orange-600">365 Hub</h1>
+            <div className="flex items-center gap-3">
+              <img src="/365-logo.svg" alt="365 Hub" className="h-10 w-10" />
+              <span className="text-xl font-bold text-slate-900">365 Hub</span>
+            </div>
             <div className="flex items-center gap-6">
-              <button className="text-slate-700 hover:text-orange-600 font-medium">Deze Week</button>
-              <button className="text-slate-500 hover:text-orange-600">Jouw Cirkel</button>
+              <button className="text-slate-700 hover:text-[#FF0837] font-medium text-sm">Deze Week</button>
+              <button
+                onClick={() => router.push("/cirkel")}
+                className="text-slate-600 hover:text-[#FF0837] text-sm"
+              >
+                Jouw Cirkel
+              </button>
               <button
                 onClick={() => router.push("/berichten")}
-                className="text-slate-500 hover:text-orange-600 relative"
+                className="text-slate-600 hover:text-[#FF0837] relative text-sm"
               >
                 Verbindingen
                 {conversations.reduce((sum, conv) => sum + conv.unreadCount, 0) > 0 && (
-                  <span className="absolute -top-1 -right-3 bg-orange-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-3 bg-[#FF0837] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {conversations.reduce((sum, conv) => sum + conv.unreadCount, 0)}
                   </span>
                 )}
               </button>
-              <button className="p-2 hover:bg-orange-50 rounded-lg">
+              <button className="p-2 hover:bg-slate-100 rounded-lg">
                 <User className="h-5 w-5 text-slate-600" />
               </button>
             </div>
@@ -247,23 +307,23 @@ export default function DashboardPage() {
       <div className="container mx-auto px-6 py-8 max-w-5xl">
         {/* Personal Welcome */}
         <div className="mb-8">
-          <p className="text-orange-600 font-medium mb-2">Welkom in</p>
+          <p className="text-[#FF0837] font-medium mb-2">Welkom in</p>
           <h2 className="text-4xl font-bold text-slate-900 mb-2">{user.circleName} 👋</h2>
           <p className="text-lg text-slate-600">Van eenzaamheid naar verbinding. Dit is wat er deze week gebeurt.</p>
         </div>
 
         {/* This Week's Pulse - Center Stage */}
-        <Card className="mb-8 border-2 border-orange-200 shadow-xl">
+        <Card className="mb-8 border-2 border-[#FFE6ED] shadow-lg bg-white">
           <CardContent className="p-8">
             <div className="space-y-6">
               {/* VREDE Ritual */}
-              <div className="border-b border-orange-100 pb-6">
+              <div className="border-b border-slate-200 pb-6">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="text-3xl">{VREDE_EMOJIS[pulse.ritual.letter]}</span>
                   <h3 className="text-2xl font-bold text-slate-900">
                     {pulse.ritual.letter} van {pulse.ritual.name}
                   </h3>
-                  <Badge className="bg-orange-100 text-orange-700">{pulse.ritual.duration} min ritueel</Badge>
+                  <Badge className="bg-[#FFF0F5] text-[#FF0837]">{pulse.ritual.duration} min ritueel</Badge>
                 </div>
                 <p className="text-lg text-slate-700 italic">
                   "{pulse.ritual.question}"
@@ -274,20 +334,20 @@ export default function DashboardPage() {
               {pulse.type === "A" && (
                 <div>
                   <p className="text-slate-600 mb-4">Laten we samen deze vraag verkennen:</p>
-                  <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-6 mb-6">
+                  <div className="bg-[#FFF0F5] rounded-xl p-6 mb-6 border border-[#FFE6ED]">
                     <div className="flex items-start gap-4 mb-4">
-                      <MapPin className="h-6 w-6 text-orange-600 flex-shrink-0 mt-1" />
+                      <MapPin className="h-6 w-6 text-[#FF0837] flex-shrink-0 mt-1" />
                       <div className="flex-1">
                         <h4 className="text-xl font-bold text-slate-900 mb-2">
                           {pulse.meetup.type} — {pulse.meetup.location}
                         </h4>
                         <div className="space-y-2 text-slate-700">
                           <p className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-orange-600" />
+                            <Clock className="h-4 w-4 text-[#FF0837]" />
                             {pulse.meetup.duration} minuten samen lopen
                           </p>
                           <p className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-orange-600" />
+                            <Users className="h-4 w-4 text-[#FF0837]" />
                             {pulse.meetup.attending} mensen komen • {pulse.meetup.locationDetails}
                           </p>
                         </div>
@@ -304,7 +364,7 @@ export default function DashboardPage() {
                       size="lg"
                       onClick={() => handleRSVP("wo")}
                       disabled={rsvpLoading || pulse.userRSVP === "wo"}
-                      className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white text-lg py-6"
+                      className="bg-[#FF0837] hover:bg-[#E6061F] text-white text-lg py-6 font-medium"
                     >
                       {rsvpLoading ? (
                         <Loader2 className="h-5 w-5 mr-2 animate-spin" />
@@ -318,7 +378,7 @@ export default function DashboardPage() {
                       variant="outline"
                       onClick={() => handleRSVP("za")}
                       disabled={rsvpLoading || pulse.userRSVP === "za"}
-                      className="border-2 border-orange-300 text-orange-700 hover:bg-orange-50 text-lg py-6"
+                      className="border-2 border-[#FF0837] text-[#FF0837] hover:bg-[#FFF0F5] text-lg py-6 font-medium"
                     >
                       {pulse.userRSVP === "za" ? "✓ " : ""}Liever za {pulse.meetup.time.saturday}
                     </Button>
@@ -333,13 +393,13 @@ export default function DashboardPage() {
 
                   {/* Response Input */}
                   {!pulse.userResponse ? (
-                    <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-6 mb-6">
+                    <div className="bg-[#FFF0F5] rounded-xl p-6 mb-6 border border-[#FFE6ED]">
                       <textarea
                         value={responseText}
                         onChange={(e) => setResponseText(e.target.value)}
                         placeholder="Deel jouw ervaring in 1 zin..."
                         maxLength={150}
-                        className="w-full p-4 rounded-lg border-2 border-orange-200 focus:border-orange-400 focus:outline-none resize-none bg-white"
+                        className="w-full p-4 rounded-lg border-2 border-[#FFE6ED] focus:border-[#FF0837] focus:outline-none resize-none bg-white"
                         rows={3}
                       />
                       <div className="flex items-center justify-between mt-3">
@@ -349,7 +409,7 @@ export default function DashboardPage() {
                         <Button
                           onClick={handleResponseSubmit}
                           disabled={!responseText.trim() || responseLoading}
-                          className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white"
+                          className="bg-[#FF0837] hover:bg-[#E6061F] text-white font-medium"
                         >
                           {responseLoading ? (
                             <>
@@ -363,8 +423,8 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-6 mb-6 border-2 border-orange-300">
-                      <p className="text-sm text-orange-700 font-medium mb-2">Jouw reactie:</p>
+                    <div className="bg-[#FFF0F5] rounded-xl p-6 mb-6 border-2 border-[#FFE6ED]">
+                      <p className="text-sm text-[#FF0837] font-medium mb-2">Jouw reactie:</p>
                       <p className="text-lg text-slate-900 font-medium">"{pulse.userResponse}"</p>
                     </div>
                   )}
@@ -381,7 +441,7 @@ export default function DashboardPage() {
                           variant="outline"
                           onClick={handleSimulateActivity}
                           disabled={aiSimulating}
-                          className="text-xs border-orange-200 text-orange-600 hover:bg-orange-50"
+                          className="text-xs border-[#FFE6ED] text-[#FF0837] hover:bg-[#FFF0F5]"
                         >
                           {aiSimulating ? (
                             <>
@@ -403,7 +463,7 @@ export default function DashboardPage() {
                               key={response.id}
                               className={`p-4 rounded-lg ${
                                 isOwnResponse
-                                  ? "bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-300"
+                                  ? "bg-[#FFF0F5] border-2 border-[#FFE6ED]"
                                   : "bg-white border border-slate-200"
                               }`}
                             >
@@ -412,7 +472,7 @@ export default function DashboardPage() {
                                   <p className="text-slate-900">
                                     <span className="font-semibold">{response.userName}</span>
                                     {isOwnResponse && (
-                                      <span className="ml-2 text-xs text-orange-600 font-medium">(jij)</span>
+                                      <span className="ml-2 text-xs text-[#FF0837] font-medium">(jij)</span>
                                     )}
                                   </p>
                                   <p className="text-slate-700 mt-1">"{response.text}"</p>
@@ -432,16 +492,19 @@ export default function DashboardPage() {
         </Card>
 
         {/* Connection Cards */}
-        <div className="grid gap-6 md:grid-cols-2 mb-8">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+          {/* Warmth Widget */}
+          <WarmthWidget user={user} />
+
           {/* Your Connections */}
-          <Card className="border-orange-100">
+          <Card className="border-[#FFE6ED]">
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-4">
-                <Heart className="h-6 w-6 text-orange-600" />
+                <Heart className="h-6 w-6 text-[#FF0837]" />
                 <h3 className="text-xl font-bold text-slate-900">Jouw verbindingen</h3>
               </div>
               <div className="space-y-3">
-                <p className="text-3xl font-bold text-orange-600">{user.connectionsCount} mensen</p>
+                <p className="text-3xl font-bold text-[#FF0837]">{user.connectionsCount} mensen</p>
                 <p className="text-slate-600">ontmoet in {user.meetupsAttended} bijeenkomsten</p>
                 <div className="pt-3 border-t border-slate-100">
                   <p className="text-sm text-slate-500">
@@ -453,18 +516,29 @@ export default function DashboardPage() {
           </Card>
 
           {/* Coffee Buddy */}
-          <Card className="border-orange-100 bg-gradient-to-br from-white to-orange-50/30">
+          <Card className="border-[#FFE6ED] bg-[#FFF0F5]">
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-4">
-                <Coffee className="h-6 w-6 text-orange-600" />
+                <Coffee className="h-6 w-6 text-[#FF0837]" />
                 <h3 className="text-xl font-bold text-slate-900">Koffie-buddy</h3>
               </div>
               <p className="text-slate-700 mb-4">
                 Deze week een koffie-buddy in je buurt? 25 min is genoeg.
               </p>
               <div className="grid gap-2 grid-cols-2">
-                <Button className="bg-orange-600 hover:bg-orange-700">
-                  Ja, koppel me
+                <Button
+                  onClick={handleBuddyMatch}
+                  disabled={buddyMatching}
+                  className="bg-[#FF0837] hover:bg-[#E6061F] text-white font-medium"
+                >
+                  {buddyMatching ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Koppelen...
+                    </>
+                  ) : (
+                    "Ja, koppel me"
+                  )}
                 </Button>
                 <Button variant="ghost" className="text-slate-600">
                   Niet nu
@@ -475,7 +549,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Upcoming in Your Circle */}
-        <Card className="border-orange-100">
+        <Card className="border-[#FFE6ED]">
           <CardHeader>
             <CardTitle className="text-xl">Volgende bijeenkomsten in jouw cirkel</CardTitle>
             <CardDescription>Nog niet ingeschreven? Dat kan nog!</CardDescription>
@@ -485,15 +559,30 @@ export default function DashboardPage() {
               {meetups.map((meetup) => (
                 <div
                   key={meetup.id}
-                  className="flex items-start gap-4 p-4 rounded-lg hover:bg-orange-50/50 transition-colors"
+                  className="flex items-start gap-4 p-4 rounded-lg hover:bg-[#FFF0F5] transition-colors"
                 >
-                  <Calendar className="h-5 w-5 text-orange-600 mt-1" />
+                  <Calendar className="h-5 w-5 text-[#FF0837] mt-1" />
                   <div className="flex-1">
                     <p className="font-semibold text-slate-900">{meetup.time} — {meetup.title}</p>
                     <p className="text-sm text-slate-600">{meetup.location} • {meetup.attending} mensen komen</p>
                   </div>
-                  <Button size="sm" variant="ghost" className="text-orange-600">
-                    Aanmelden →
+                  <Button
+                    size="sm"
+                    variant={meetup.userRegistered ? "default" : "ghost"}
+                    className={meetup.userRegistered ? "bg-[#FF0837] text-white font-medium" : "text-[#FF0837]"}
+                    onClick={() => !meetup.userRegistered && handleMeetupRSVP(meetup.id)}
+                    disabled={meetupRegistering === meetup.id || meetup.userRegistered}
+                  >
+                    {meetupRegistering === meetup.id ? (
+                      <>
+                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                        ...
+                      </>
+                    ) : meetup.userRegistered ? (
+                      "✓ Aangemeld"
+                    ) : (
+                      "Aanmelden →"
+                    )}
                   </Button>
                 </div>
               ))}

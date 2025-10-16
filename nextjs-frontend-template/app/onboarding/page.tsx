@@ -56,10 +56,10 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex items-center justify-center p-6">
-      <Card className="w-full max-w-lg border-orange-100 shadow-xl">
+    <div className="min-h-screen bg-white flex items-center justify-center p-6">
+      <Card className="w-full max-w-lg border-[#FFE6ED] shadow-xl">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
+          <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-[#FF0837] flex items-center justify-center">
             <Sparkles className="h-8 w-8 text-white" />
           </div>
           <CardTitle className="text-3xl font-bold text-slate-900">
@@ -77,7 +77,7 @@ export default function OnboardingPage() {
               <div
                 key={i}
                 className={`h-2 flex-1 rounded-full transition-colors ${
-                  i <= step ? "bg-orange-500" : "bg-orange-100"
+                  i <= step ? "bg-[#FF0837]" : "bg-[#FFE6ED]"
                 }`}
               />
             ))}
@@ -133,7 +133,7 @@ export default function OnboardingPage() {
                 onValueChange={(value) => updateField("availability", value)}
                 className="space-y-3"
               >
-                <div className="flex items-center space-x-3 border-2 border-orange-100 rounded-lg p-4 hover:border-orange-300 transition-colors cursor-pointer">
+                <div className="flex items-center space-x-3 border-2 border-[#FFE6ED] rounded-lg p-4 hover:border-[#FF0837] transition-colors cursor-pointer">
                   <RadioGroupItem value="doordeweeks" id="doordeweeks" />
                   <Label
                     htmlFor="doordeweeks"
@@ -144,7 +144,7 @@ export default function OnboardingPage() {
                   </Label>
                 </div>
 
-                <div className="flex items-center space-x-3 border-2 border-orange-100 rounded-lg p-4 hover:border-orange-300 transition-colors cursor-pointer">
+                <div className="flex items-center space-x-3 border-2 border-[#FFE6ED] rounded-lg p-4 hover:border-[#FF0837] transition-colors cursor-pointer">
                   <RadioGroupItem value="weekend" id="weekend" />
                   <Label
                     htmlFor="weekend"
@@ -155,7 +155,7 @@ export default function OnboardingPage() {
                   </Label>
                 </div>
 
-                <div className="flex items-center space-x-3 border-2 border-orange-100 rounded-lg p-4 hover:border-orange-300 transition-colors cursor-pointer">
+                <div className="flex items-center space-x-3 border-2 border-[#FFE6ED] rounded-lg p-4 hover:border-[#FF0837] transition-colors cursor-pointer">
                   <RadioGroupItem value="beide" id="beide" />
                   <Label
                     htmlFor="beide"
@@ -186,7 +186,7 @@ export default function OnboardingPage() {
                 onValueChange={(value) => updateField("comfort", value)}
                 className="space-y-3"
               >
-                <div className="flex items-center space-x-3 border-2 border-orange-100 rounded-lg p-4 hover:border-orange-300 transition-colors cursor-pointer">
+                <div className="flex items-center space-x-3 border-2 border-[#FFE6ED] rounded-lg p-4 hover:border-[#FF0837] transition-colors cursor-pointer">
                   <RadioGroupItem value="korte-groepjes" id="korte-groepjes" />
                   <Label
                     htmlFor="korte-groepjes"
@@ -197,7 +197,7 @@ export default function OnboardingPage() {
                   </Label>
                 </div>
 
-                <div className="flex items-center space-x-3 border-2 border-orange-100 rounded-lg p-4 hover:border-orange-300 transition-colors cursor-pointer">
+                <div className="flex items-center space-x-3 border-2 border-[#FFE6ED] rounded-lg p-4 hover:border-[#FF0837] transition-colors cursor-pointer">
                   <RadioGroupItem value="grote-groepen" id="grote-groepen" />
                   <Label
                     htmlFor="grote-groepen"
@@ -208,7 +208,7 @@ export default function OnboardingPage() {
                   </Label>
                 </div>
 
-                <div className="flex items-center space-x-3 border-2 border-orange-100 rounded-lg p-4 hover:border-orange-300 transition-colors cursor-pointer">
+                <div className="flex items-center space-x-3 border-2 border-[#FFE6ED] rounded-lg p-4 hover:border-[#FF0837] transition-colors cursor-pointer">
                   <RadioGroupItem value="1-op-1" id="1-op-1" />
                   <Label
                     htmlFor="1-op-1"
@@ -228,7 +228,7 @@ export default function OnboardingPage() {
               <Button
                 onClick={handleBack}
                 variant="outline"
-                className="flex-1 border-2 border-orange-200 text-orange-700 hover:bg-orange-50"
+                className="flex-1 border-2 border-[#FFE6ED] text-[#FF0837] hover:bg-[#FFF0F5]"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Vorige
@@ -239,7 +239,7 @@ export default function OnboardingPage() {
               <Button
                 onClick={handleNext}
                 disabled={!canProceed()}
-                className={`flex-1 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white ${
+                className={`flex-1 bg-[#FF0837] hover:bg-[#E6061F] text-white ${
                   step === 1 ? "w-full" : ""
                 }`}
               >
@@ -250,7 +250,7 @@ export default function OnboardingPage() {
               <Button
                 onClick={handleSubmit}
                 disabled={!canProceed()}
-                className="flex-1 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white"
+                className="flex-1 bg-[#FF0837] hover:bg-[#E6061F] text-white"
               >
                 <Sparkles className="h-4 w-4 mr-2" />
                 Start mijn reis

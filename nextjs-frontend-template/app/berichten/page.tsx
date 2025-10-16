@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Send, Loader2, MessageCircle, User } from "lucide-react"
+import { Header } from "@/components/Header"
 import type { Conversation, Message } from "@/lib/types"
 
 // Helper function to format relative time
@@ -118,38 +119,37 @@ export default function BerichtenPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#FF0837]" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-      {/* Simple Top Navigation */}
-      <nav className="bg-white/80 backdrop-blur-sm border-b border-orange-100 sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => router.push("/")}
-                className="text-orange-600 hover:text-orange-700"
-              >
-                <ArrowLeft className="h-6 w-6" />
-              </button>
-              <h1 className="text-2xl font-bold text-orange-600">
-                {selectedConversation ? selectedConversation.buddyName : "Berichten"}
-              </h1>
-            </div>
+    <div className="min-h-screen bg-white">
+      {/* Top Navigation with Logo */}
+      <Header
+        showLogo={false}
+        rightContent={
+          <div className="flex items-center gap-4">
             <button
               onClick={() => router.push("/")}
-              className="p-2 hover:bg-orange-50 rounded-lg"
+              className="text-[#FF0837] hover:text-[#E6061F] -ml-4"
+            >
+              <ArrowLeft className="h-6 w-6" />
+            </button>
+            <h1 className="text-2xl font-bold text-slate-900 flex-1">
+              {selectedConversation ? selectedConversation.buddyName : "Berichten"}
+            </h1>
+            <button
+              onClick={() => router.push("/")}
+              className="p-2 hover:bg-slate-100 rounded-lg"
             >
               <User className="h-5 w-5 text-slate-600" />
             </button>
           </div>
-        </div>
-      </nav>
+        }
+      />
 
       <div className="container mx-auto px-6 py-8 max-w-4xl">
         {!selectedConversation ? (
@@ -161,9 +161,9 @@ export default function BerichtenPage() {
             </div>
 
             {conversations.length === 0 ? (
-              <Card className="border-orange-100">
+              <Card className="border-[#FFE6ED]">
                 <CardContent className="p-12 text-center">
-                  <MessageCircle className="h-12 w-12 text-orange-300 mx-auto mb-4" />
+                  <MessageCircle className="h-12 w-12 text-[#FFE6ED] mx-auto mb-4" />
                   <p className="text-lg text-slate-600 mb-2">Nog geen berichten</p>
                   <p className="text-sm text-slate-500">
                     Zodra je gekoppeld wordt aan een buddy, verschijnen je gesprekken hier.
@@ -175,12 +175,12 @@ export default function BerichtenPage() {
                 {conversations.map((conversation) => (
                   <Card
                     key={conversation.id}
-                    className="border-orange-100 hover:border-orange-300 transition-colors cursor-pointer"
+                    className="border-[#FFE6ED] hover:border-[#FF0837] transition-colors cursor-pointer"
                     onClick={() => setSelectedConversation(conversation)}
                   >
                     <CardContent className="p-5">
                       <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                        <div className="w-12 h-12 rounded-full bg-[#FF0837] flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
                           {conversation.buddyName.charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -189,12 +189,12 @@ export default function BerichtenPage() {
                               {conversation.buddyName}
                             </h3>
                             {conversation.type === "buddy-match" && (
-                              <Badge className="bg-orange-100 text-orange-700 text-xs">
+                              <Badge className="bg-[#FFF0F5] text-[#FF0837] text-xs">
                                 Buddy Match
                               </Badge>
                             )}
                             {conversation.unreadCount > 0 && (
-                              <Badge className="bg-orange-600 text-white text-xs">
+                              <Badge className="bg-[#FF0837] text-white text-xs">
                                 {conversation.unreadCount}
                               </Badge>
                             )}
@@ -216,7 +216,7 @@ export default function BerichtenPage() {
         ) : (
           /* Thread View */
           <div className="flex flex-col h-[calc(100vh-180px)]">
-            <Card className="border-orange-200 flex-1 flex flex-col overflow-hidden">
+            <Card className="border-[#FFE6ED] flex-1 flex flex-col overflow-hidden">
               {/* Messages Area */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
                 {messages.map((message, index) => {
@@ -233,7 +233,7 @@ export default function BerichtenPage() {
                       }`}
                     >
                       {showAvatar && !isOwnMessage && (
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-[#FF0837] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                           {message.fromUserName.charAt(0)}
                         </div>
                       )}
@@ -252,7 +252,7 @@ export default function BerichtenPage() {
                         <div
                           className={`rounded-2xl px-4 py-3 ${
                             isOwnMessage
-                              ? "bg-gradient-to-r from-orange-600 to-amber-600 text-white"
+                              ? "bg-[#FF0837] text-white"
                               : "bg-white border border-slate-200 text-slate-900"
                           }`}
                         >
@@ -273,7 +273,7 @@ export default function BerichtenPage() {
               </div>
 
               {/* Message Input */}
-              <div className="border-t border-orange-100 p-4 bg-white">
+              <div className="border-t border-[#FFE6ED] p-4 bg-white">
                 <div className="flex gap-3">
                   <input
                     type="text"
@@ -286,12 +286,12 @@ export default function BerichtenPage() {
                       }
                     }}
                     placeholder="Typ een bericht..."
-                    className="flex-1 px-4 py-3 rounded-xl border-2 border-orange-200 focus:border-orange-400 focus:outline-none"
+                    className="flex-1 px-4 py-3 rounded-xl border-2 border-[#FFE6ED] focus:border-[#FF0837] focus:outline-none"
                   />
                   <Button
                     onClick={handleSendMessage}
                     disabled={!messageText.trim() || sendLoading}
-                    className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white px-6"
+                    className="bg-[#FF0837] hover:bg-[#E6061F] text-white px-6"
                   >
                     {sendLoading ? (
                       <Loader2 className="h-5 w-5 animate-spin" />
