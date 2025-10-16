@@ -3,10 +3,11 @@ import { getMessages, sendMessage } from "@/lib/mockData"
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { conversationId: string } }
+  { params }: { params: Promise<{ conversationId: string }> }
 ) {
   try {
-    const messages = getMessages(params.conversationId)
+    const { conversationId } = await params
+    const messages = getMessages(conversationId)
     return NextResponse.json(messages)
   } catch (error) {
     return NextResponse.json(
@@ -18,9 +19,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { conversationId: string } }
+  { params }: { params: Promise<{ conversationId: string }> }
 ) {
   try {
+    const { conversationId } = await params
     const body = await request.json()
     const { text } = body
 
@@ -31,7 +33,7 @@ export async function POST(
       )
     }
 
-    const newMessage = sendMessage(params.conversationId, text)
+    const newMessage = sendMessage(conversationId, text)
     return NextResponse.json(newMessage)
   } catch (error) {
     return NextResponse.json(
