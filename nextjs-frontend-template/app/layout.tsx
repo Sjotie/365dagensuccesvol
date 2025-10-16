@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
-import { Nunito_Sans } from "next/font/google";
+import { Nunito_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
 const museoSans = Nunito_Sans({
   variable: "--font-museo-sans",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+});
+
+// Using Playfair Display as a substitute for New Spirit (elegant serif)
+const newSpirit = Playfair_Display({
+  variable: "--font-new-spirit",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -21,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="nl">
-      <body className={`${museoSans.variable} antialiased`}>
+      <body className={`${museoSans.variable} ${newSpirit.variable} antialiased`}>
         {children}
       </body>
     </html>

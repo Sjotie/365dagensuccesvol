@@ -32,25 +32,10 @@ export async function POST(request: NextRequest) {
 
     const aiResponse = await agentResponse.json()
 
-    // Extract clean text from potentially markdown-wrapped JSON
-    let cleanText = aiResponse.text
-    if (cleanText.includes("```json")) {
-      // Parse the JSON from markdown code block
-      const jsonMatch = cleanText.match(/```json\s*([\s\S]*?)\s*```/)
-      if (jsonMatch) {
-        try {
-          const parsed = JSON.parse(jsonMatch[1])
-          cleanText = parsed.text
-        } catch (e) {
-          console.error("Failed to parse JSON from markdown:", e)
-        }
-      }
-    }
-
     // Add the AI-generated response to the mock data
     addCommunityResponse(
       aiResponse.member_name,
-      cleanText,
+      aiResponse.text,
       aiResponse.tone
     )
 

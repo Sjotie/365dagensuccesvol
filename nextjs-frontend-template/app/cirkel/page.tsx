@@ -5,9 +5,17 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Users, TrendingUp, Calendar, Activity, User, Loader2, Bell, Send, Coffee } from "lucide-react"
+import { Users, TrendingUp, Calendar, Activity, User, Loader2, Bell, Send, Coffee, MessageCircle } from "lucide-react"
 import { Header } from "@/components/Header"
 import type { CircleMember, CircleStats, User as UserType } from "@/lib/types"
+
+interface CircleMessage {
+  id: string
+  userId: string
+  userName: string
+  text: string
+  timestamp: string
+}
 
 // Helper function to format relative time
 function getTimeAgo(timestamp: string): string {
@@ -59,25 +67,33 @@ export default function CirkelPage() {
   const [loading, setLoading] = useState(true)
   const [sendingNudge, setSendingNudge] = useState<string | null>(null)
 
+  // Group chat state
+  const [circleMessages, setCircleMessages] = useState<CircleMessage[]>([])
+  const [messageInput, setMessageInput] = useState("")
+  const [sendingMessage, setSendingMessage] = useState(false)
+
   useEffect(() => {
     async function fetchData() {
       try {
-        const [userRes, membersRes, statsRes, inactiveRes] = await Promise.all([
+        const [userRes, membersRes, statsRes, inactiveRes, messagesRes] = await Promise.all([
           fetch("/api/user"),
           fetch("/api/circle/members"),
           fetch("/api/circle/stats"),
           fetch("/api/reengagement/inactive"),
+          fetch("/api/circle/messages"),
         ])
 
         const userData = await userRes.json()
         const membersData = await membersRes.json()
         const statsData = await statsRes.json()
         const inactiveDataRes = await inactiveRes.json()
+        const messagesData = await messagesRes.json()
 
         setUser(userData)
         setMembers(membersData)
         setStats(statsData)
         setInactiveData(inactiveDataRes)
+        setCircleMessages(messagesData)
       } catch (error) {
         console.error("Failed to fetch data:", error)
       } finally {
@@ -110,6 +126,29 @@ export default function CirkelPage() {
       alert("Er ging iets mis bij het versturen van de nudge.")
     } finally {
       setSendingNudge(null)
+    }
+  }
+
+  const handleSendMessage = async () => {
+    if (!messageInput.trim() || !user) return
+
+    setSendingMessage(true)
+    try {
+      const response = await fetch("/api/circle/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: messageInput }),
+      })
+
+      if (response.ok) {
+        const newMessage = await response.json()
+        setCircleMessages([...circleMessages, newMessage])
+        setMessageInput("")
+      }
+    } catch (error) {
+      console.error("Failed to send message:", error)
+    } finally {
+      setSendingMessage(false)
     }
   }
 
@@ -200,6 +239,87 @@ export default function CirkelPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Group Chat */}
+        <Card className="border-[#FFE6ED] mb-8">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <MessageCircle className="h-5 w-5 text-[#FF0837]" />
+              <div>
+                <CardTitle className="text-xl">Cirkel Chat</CardTitle>
+                <CardDescription>Deel updates, stel vragen, moedig elkaar aan</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {/* Messages Area */}
+            <div className="mb-4 max-h-96 overflow-y-auto space-y-3 p-4 bg-white rounded-lg border border-slate-100">
+              {circleMessages.length === 0 ? (
+                <div className="text-center py-8">
+                  <MessageCircle className="h-12 w-12 text-[#FFE6ED] mx-auto mb-3" />
+                  <p className="text-slate-600 mb-1">Nog geen berichten</p>
+                  <p className="text-sm text-slate-500">Wees de eerste om iets te delen met je cirkel!</p>
+                </div>
+              ) : (
+                circleMessages.map((message) => {
+                  const isOwnMessage = message.userId === user.id
+                  return (
+                    <div
+                      key={message.id}
+                      className={`flex gap-3 ${isOwnMessage ? "flex-row-reverse" : "flex-row"}`}
+                    >
+                      <div className="w-8 h-8 rounded-full bg-[#FF0837] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                        {message.userName.charAt(0)}
+                      </div>
+                      <div className={`flex-1 max-w-[70%] ${isOwnMessage ? "items-end" : "items-start"}`}>
+                        <p className="text-xs text-slate-500 mb-1 px-3">
+                          {message.userName} • {getTimeAgo(message.timestamp)}
+                        </p>
+                        <div
+                          className={`rounded-2xl px-4 py-3 ${
+                            isOwnMessage
+                              ? "bg-[#FF0837] text-white"
+                              : "bg-[#FFF0F5] border border-[#FFE6ED] text-slate-900"
+                          }`}
+                        >
+                          <p className="text-sm leading-relaxed">{message.text}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })
+              )}
+            </div>
+
+            {/* Message Input */}
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault()
+                    handleSendMessage()
+                  }
+                }}
+                placeholder="Deel iets met je cirkel..."
+                className="flex-1 px-4 py-3 rounded-xl border-2 border-[#FFE6ED] focus:border-[#FF0837] focus:outline-none text-sm"
+              />
+              <Button
+                onClick={handleSendMessage}
+                disabled={!messageInput.trim() || sendingMessage}
+                className="bg-[#FF0837] hover:bg-[#E6061F] text-white px-6"
+              >
+                {sendingMessage ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Send className="h-5 w-5" />
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Facilitator: Re-engagement Dashboard */}
         {inactiveData && inactiveData.total > 0 && (

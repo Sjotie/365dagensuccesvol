@@ -77,6 +77,7 @@ async def startup_event():
         from pydantic_agents.clients.default.agents.event_contract_assistant.agent import event_contract_assistant_agent
         from pydantic_agents.clients.default.agents.marketing_communicatie.agent import marketing_communicatie_agent
         from pydantic_agents.clients.default.agents.community_member import CommunityMemberAgent
+        from pydantic_agents.clients.default.agents.reengagement import ReengagementAgent
 
         # Register agents (using hyphenated names for frontend compatibility)
         registry.register("contract-clearance", contract_clearance_agent)
@@ -87,12 +88,15 @@ async def startup_event():
         # Register community member (no wrapper, direct class)
         registry.register("community-member", CommunityMemberAgent)
 
-        # Initialize all agents (except community-member which doesn't need init)
+        # Register re-engagement agent (no wrapper, direct class)
+        registry.register("reengagement", ReengagementAgent)
+
+        # Initialize all agents (except community-member and reengagement which don't need init)
         for name, agent in registry.items():
-            if name != "community-member" and hasattr(agent, 'initialize'):
+            if name not in ["community-member", "reengagement"] and hasattr(agent, 'initialize'):
                 await agent.initialize()
                 print(f"  Initialized: {name}")
-            elif name == "community-member":
+            elif name in ["community-member", "reengagement"]:
                 print(f"  Registered: {name} (no initialization needed)")
 
         print(f"All agents initialized. Default: {DEFAULT_AGENT}")
@@ -260,6 +264,100 @@ async def generate_pulse_response(request: PulseResponseRequest):
         print(f"[ERROR] Exception generating response: {e}")
         print(f"[ERROR] Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Error generating response: {str(e)}")
+
+
+# Re-engagement endpoints
+class NudgeRequest(BaseModel):
+    member_name: str
+    days_inactive: int
+    last_activity: str = "deelname aan pulse"
+    upcoming_event: str | None = None
+
+
+class NudgeResponse(BaseModel):
+    subject: str
+    message: str
+    tone: str
+    urgency_level: str
+    days_inactive: int
+    tier: str
+
+
+@app.post("/reengagement/generate-nudge", response_model=NudgeResponse)
+async def generate_nudge(request: NudgeRequest):
+    """
+    Generate a warm re-engagement nudge for an inactive member.
+    Tier automatically determined based on days_inactive.
+    """
+    print(f"[ENDPOINT] /reengagement/generate-nudge called for: {request.member_name} ({request.days_inactive} days)")
+    try:
+        reengagement = registry.get("reengagement")
+        if not reengagement:
+            raise HTTPException(status_code=404, detail="Re-engagement agent not found")
+
+        # Generate nudge
+        nudge = await reengagement.generate_nudge(
+            member_name=request.member_name,
+            days_inactive=request.days_inactive,
+            last_activity=request.last_activity,
+            upcoming_event=request.upcoming_event,
+        )
+
+        print(f"[NUDGE] Generated: {nudge['message']}")
+
+        return NudgeResponse(**nudge)
+
+    except Exception as e:
+        import traceback
+        print(f"[ERROR] Exception generating nudge: {e}")
+        print(f"[ERROR] Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Error generating nudge: {str(e)}")
+
+
+class BuddyNudgeRequest(BaseModel):
+    member_name: str
+    buddy_name: str = "Thomas"
+    day: str = "za"
+    time: str = "10:00"
+
+
+class BuddyNudgeResponse(BaseModel):
+    buddy_name: str
+    member_name: str
+    message: str
+    day: str
+    time: str
+
+
+@app.post("/reengagement/buddy-nudge", response_model=BuddyNudgeResponse)
+async def generate_buddy_nudge(request: BuddyNudgeRequest):
+    """
+    Generate a buddy invitation as a re-engagement nudge.
+    """
+    print(f"[ENDPOINT] /reengagement/buddy-nudge called: {request.buddy_name} → {request.member_name}")
+    try:
+        reengagement = registry.get("reengagement")
+        if not reengagement:
+            raise HTTPException(status_code=404, detail="Re-engagement agent not found")
+
+        # Generate buddy nudge
+        nudge = await reengagement.generate_buddy_nudge(
+            member_name=request.member_name,
+            buddy_name=request.buddy_name,
+            day=request.day,
+            time=request.time,
+        )
+
+        print(f"[BUDDY NUDGE] Generated: {nudge['message']}")
+
+        return BuddyNudgeResponse(**nudge)
+
+    except Exception as e:
+        import traceback
+        print(f"[ERROR] Exception generating buddy nudge: {e}")
+        print(f"[ERROR] Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Error generating buddy nudge: {str(e)}")
+
 
 @app.post("/chat/stream")
 async def chat_stream(request: MessageRequest):

@@ -100,12 +100,41 @@ Antwoord in JSON format:
 
         # Try to parse JSON from the response
         import json
+        import re
         response_text = str(result.output) if hasattr(result, 'output') else str(result)
+
+        # Try to extract JSON from markdown code blocks
+        if "```json" in response_text:
+            json_match = re.search(r'```json\s*([\s\S]*?)\s*```', response_text)
+            if json_match:
+                response_text = json_match.group(1).strip()
+
         try:
-            return json.loads(response_text)
-        except:
-            # Fallback: return simple structure
-            return {"text": response_text, "tone": "warm"}
+            # Ensure proper UTF-8 encoding
+            if isinstance(response_text, bytes):
+                response_text = response_text.decode('utf-8', errors='replace')
+
+            parsed = json.loads(response_text)
+            # Extract just the text and tone values from the parsed JSON
+            text = parsed.get("text", response_text)
+            tone = parsed.get("tone", "warm")
+
+            # Clean up any remaining encoding issues
+            if isinstance(text, str):
+                text = text.encode('latin1', errors='ignore').decode('utf-8', errors='replace')
+
+            return {"text": text, "tone": tone}
+        except Exception as e:
+            print(f"[AGENT] Failed to parse JSON: {e}")
+            print(f"[AGENT] Raw response: {response_text}")
+            # Fallback: return simple structure, clean encoding
+            clean_text = response_text
+            if isinstance(clean_text, str):
+                try:
+                    clean_text = clean_text.encode('latin1', errors='ignore').decode('utf-8', errors='replace')
+                except:
+                    pass
+            return {"text": clean_text, "tone": "warm"}
 
     @staticmethod
     async def generate_buddy_message(

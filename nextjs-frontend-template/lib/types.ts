@@ -12,6 +12,10 @@ export interface User {
   circleName: string
   connectionsCount: number
   meetupsAttended: number
+  warmthScore: number // 0-100, measures community engagement
+  currentStreak: number // days of consecutive engagement
+  lastActive: string // ISO date string
+  impactScore?: number // how much your presence affects community warmth
 }
 
 export interface VREDERitual {
@@ -100,4 +104,30 @@ export interface Conversation {
   lastMessageTime: string
   unreadCount: number
   type: "buddy-match" | "direct"
+}
+
+export interface CircleMember {
+  id: string
+  name: string
+  joinedAt: string
+  lastActive: string
+  meetupsAttended: number
+  warmthScore: number // 0-100
+  status: "active" | "quiet" | "inactive"
+}
+
+export interface CircleStats {
+  totalMembers: number
+  activeMembers: number
+  avgWarmth: number
+  totalMeetups: number
+  thisWeekRSVP: number
+}
+
+export interface CircleMessage {
+  id: string
+  userId: string
+  userName: string
+  text: string
+  timestamp: string
 }

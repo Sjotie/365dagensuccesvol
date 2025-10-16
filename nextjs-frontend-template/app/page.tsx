@@ -80,7 +80,7 @@ export default function DashboardPage() {
   }, [])
 
   const handleRSVP = async (timeSlot: "wo" | "za") => {
-    if (!pulse) return
+    if (!pulse || pulse.type !== "A") return
 
     setRsvpLoading(true)
 
