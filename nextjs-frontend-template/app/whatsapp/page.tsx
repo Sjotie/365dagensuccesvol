@@ -185,7 +185,7 @@ export default function WhatsAppLandingPage() {
       </nav>
 
       {/* Scenario Navigation */}
-      <div className="sticky top-[50px] md:top-[73px] z-40 bg-white border-b border-slate-200 shadow-sm">
+      <div className="sticky top-[49px] md:top-[72px] z-40 bg-white border-b border-slate-200 shadow-sm -mt-px">
         <div className="relative">
           {/* Left gradient fade */}
           <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
