@@ -56,9 +56,10 @@ export default function BerichtenPage() {
   // Fetch messages when conversation is selected
   useEffect(() => {
     if (selectedConversation) {
+      const conversationId = selectedConversation.id
       async function fetchMessages() {
         try {
-          const response = await fetch(`/api/messages/${selectedConversation.id}`)
+          const response = await fetch(`/api/messages/${conversationId}`)
           const data = await response.json()
           setMessages(data)
         } catch (error) {
