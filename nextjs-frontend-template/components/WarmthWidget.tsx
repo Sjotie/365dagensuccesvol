@@ -26,18 +26,18 @@ export function WarmthWidget({ user }: WarmthWidgetProps) {
 
   return (
     <Card className="border-[#FFE6ED] bg-[#FFF0F5]">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-medium text-gray-700 flex items-center gap-2">
+      <CardHeader className="pb-2 md:pb-3 p-4 md:p-6">
+        <CardTitle className="text-sm md:text-base font-medium text-gray-700 flex items-center gap-2">
           <Flame className="h-4 w-4 text-[#FF0837]" />
           Je aanwezigheid
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 md:space-y-4 p-4 md:p-6 pt-0">
         {/* Warmth Score */}
-        <div className="space-y-2">
+        <div className="space-y-1 md:space-y-2">
           <div className="flex items-baseline justify-between">
-            <span className="text-sm text-gray-600">Warmte score</span>
-            <span className={`text-2xl font-bold ${getWarmthColor(user.warmthScore)}`}>
+            <span className="text-xs md:text-sm text-gray-600">Warmte score</span>
+            <span className={`text-xl md:text-2xl font-bold ${getWarmthColor(user.warmthScore)}`}>
               {user.warmthScore}
             </span>
           </div>
@@ -52,20 +52,20 @@ export function WarmthWidget({ user }: WarmthWidgetProps) {
 
         {/* Streak */}
         <div className="flex items-center justify-between py-2 border-t border-[#FFE6ED]">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 md:gap-2">
             <Calendar className="h-4 w-4 text-[#FF0837]" />
-            <span className="text-sm text-gray-600">Huidige reeks</span>
+            <span className="text-xs md:text-sm text-gray-600">Huidige reeks</span>
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-lg font-semibold text-[#FF0837]">{user.currentStreak}</span>
+            <span className="text-base md:text-lg font-semibold text-[#FF0837]">{user.currentStreak}</span>
             <span className="text-xs text-gray-500">dagen</span>
           </div>
         </div>
 
         {/* Impact Score */}
         {user.impactScore && user.impactScore > 0 && (
-          <div className="flex items-center gap-2 py-2 px-3 bg-green-50 rounded-lg border border-green-100">
-            <TrendingUp className="h-4 w-4 text-green-600" />
+          <div className="flex items-center gap-2 py-2 px-2 md:px-3 bg-green-50 rounded-lg border border-green-100">
+            <TrendingUp className="h-3 md:h-4 w-3 md:w-4 text-green-600 flex-shrink-0" />
             <p className="text-xs text-green-700">
               Je aanwezigheid verhoogt de cirkel warmte met <span className="font-semibold">+{user.impactScore}</span>
             </p>

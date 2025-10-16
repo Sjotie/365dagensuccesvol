@@ -271,25 +271,26 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-white">
       {/* Top Navigation - 365dagensuccesvol style */}
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-3 md:px-6 py-2 md:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img src="/365-logo.svg" alt="365 Hub" className="h-10 w-10" />
-              <span className="text-xl font-bold text-slate-900">365 Hub</span>
+            <div className="flex items-center gap-2 md:gap-3">
+              <img src="/365-logo.svg" alt="365 Hub" className="h-8 md:h-10 w-8 md:w-10" />
+              <span className="text-base md:text-xl font-bold text-slate-900">365 Hub</span>
             </div>
-            <div className="flex items-center gap-6">
-              <button className="text-slate-700 hover:text-[#FF0837] font-medium text-sm">Deze Week</button>
+            <div className="flex items-center gap-2 md:gap-6">
+              <button className="text-slate-700 hover:text-[#FF0837] font-medium text-xs md:text-sm hidden sm:block">Deze Week</button>
               <button
                 onClick={() => router.push("/cirkel")}
-                className="text-slate-600 hover:text-[#FF0837] text-sm"
+                className="text-slate-600 hover:text-[#FF0837] text-xs md:text-sm hidden sm:block"
               >
                 Jouw Cirkel
               </button>
               <button
                 onClick={() => router.push("/berichten")}
-                className="text-slate-600 hover:text-[#FF0837] relative text-sm"
+                className="text-slate-600 hover:text-[#FF0837] relative text-xs md:text-sm"
               >
-                Verbindingen
+                <span className="hidden sm:inline">Verbindingen</span>
+                <span className="sm:hidden">Chat</span>
                 {conversations.reduce((sum, conv) => sum + conv.unreadCount, 0) > 0 && (
                   <span className="absolute -top-1 -right-3 bg-[#FF0837] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {conversations.reduce((sum, conv) => sum + conv.unreadCount, 0)}
@@ -298,40 +299,41 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => router.push("/whatsapp")}
-                className="text-white bg-[#FF0837] hover:bg-[#E6061F] px-4 py-2 rounded-full text-sm font-medium transition-colors"
+                className="text-white bg-[#FF0837] hover:bg-[#E6061F] px-2 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors"
               >
-                WhatsApp Demo →
+                <span className="hidden sm:inline">WhatsApp Demo →</span>
+                <span className="sm:hidden">Demo</span>
               </button>
-              <button className="p-2 hover:bg-slate-100 rounded-lg">
-                <User className="h-5 w-5 text-slate-600" />
+              <button className="p-1 md:p-2 hover:bg-slate-100 rounded-lg">
+                <User className="h-4 md:h-5 w-4 md:w-5 text-slate-600" />
               </button>
             </div>
           </div>
         </div>
       </nav>
 
-      <div className="container mx-auto px-6 py-8 max-w-5xl">
+      <div className="container mx-auto px-3 md:px-6 py-4 md:py-8 max-w-5xl">
         {/* Personal Welcome */}
-        <div className="mb-8">
-          <p className="text-[#FF0837] font-medium mb-2">Welkom in</p>
-          <h2 className="text-4xl font-bold text-slate-900 mb-2">{user.circleName} 👋</h2>
-          <p className="text-lg text-slate-600">Van eenzaamheid naar verbinding. Dit is wat er deze week gebeurt.</p>
+        <div className="mb-4 md:mb-8">
+          <p className="text-[#FF0837] font-medium mb-1 md:mb-2 text-sm md:text-base">Welkom in</p>
+          <h2 className="text-2xl md:text-4xl font-bold text-slate-900 mb-1 md:mb-2">{user.circleName} 👋</h2>
+          <p className="text-base md:text-lg text-slate-600">Van eenzaamheid naar verbinding. Dit is wat er deze week gebeurt.</p>
         </div>
 
         {/* This Week's Pulse - Center Stage */}
-        <Card className="mb-8 border-2 border-[#FFE6ED] shadow-lg bg-white">
-          <CardContent className="p-8">
-            <div className="space-y-6">
+        <Card className="mb-4 md:mb-8 border-2 border-[#FFE6ED] shadow-lg bg-white">
+          <CardContent className="p-4 md:p-8">
+            <div className="space-y-4 md:space-y-6">
               {/* VREDE Ritual */}
-              <div className="border-b border-slate-200 pb-6">
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="text-3xl">{VREDE_EMOJIS[pulse.ritual.letter]}</span>
-                  <h3 className="text-2xl font-bold text-slate-900">
+              <div className="border-b border-slate-200 pb-4 md:pb-6">
+                <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3 flex-wrap">
+                  <span className="text-2xl md:text-3xl">{VREDE_EMOJIS[pulse.ritual.letter]}</span>
+                  <h3 className="text-xl md:text-2xl font-bold text-slate-900">
                     {pulse.ritual.letter} van {pulse.ritual.name}
                   </h3>
-                  <Badge className="bg-[#FFF0F5] text-[#FF0837]">{pulse.ritual.duration} min ritueel</Badge>
+                  <Badge className="bg-[#FFF0F5] text-[#FF0837] text-xs md:text-sm">{pulse.ritual.duration} min ritueel</Badge>
                 </div>
-                <p className="text-lg text-slate-700 italic">
+                <p className="text-base md:text-lg text-slate-700 italic">
                   "{pulse.ritual.question}"
                 </p>
               </div>
@@ -339,15 +341,15 @@ export default function DashboardPage() {
               {/* Pulse A - Meetup Proposal */}
               {pulse.type === "A" && (
                 <div>
-                  <p className="text-slate-600 mb-4">Laten we samen deze vraag verkennen:</p>
-                  <div className="bg-[#FFF0F5] rounded-xl p-6 mb-6 border border-[#FFE6ED]">
-                    <div className="flex items-start gap-4 mb-4">
-                      <MapPin className="h-6 w-6 text-[#FF0837] flex-shrink-0 mt-1" />
+                  <p className="text-slate-600 mb-3 md:mb-4 text-sm md:text-base">Laten we samen deze vraag verkennen:</p>
+                  <div className="bg-[#FFF0F5] rounded-xl p-4 md:p-6 mb-4 md:mb-6 border border-[#FFE6ED]">
+                    <div className="flex items-start gap-3 md:gap-4 mb-3 md:mb-4">
+                      <MapPin className="h-5 md:h-6 w-5 md:w-6 text-[#FF0837] flex-shrink-0 mt-1" />
                       <div className="flex-1">
-                        <h4 className="text-xl font-bold text-slate-900 mb-2">
+                        <h4 className="text-lg md:text-xl font-bold text-slate-900 mb-2">
                           {pulse.meetup.type} — {pulse.meetup.location}
                         </h4>
-                        <div className="space-y-2 text-slate-700">
+                        <div className="space-y-1 md:space-y-2 text-slate-700 text-sm md:text-base">
                           <p className="flex items-center gap-2">
                             <Clock className="h-4 w-4 text-[#FF0837]" />
                             {pulse.meetup.duration} minuten samen lopen
@@ -359,23 +361,23 @@ export default function DashboardPage() {
                         </div>
                       </div>
                     </div>
-                    <p className="text-sm text-slate-600 italic mb-4">
+                    <p className="text-xs md:text-sm text-slate-600 italic mb-3 md:mb-4">
                       {pulse.meetup.prompt}
                     </p>
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="grid gap-3 md:grid-cols-2">
+                  <div className="grid gap-2 md:gap-3 md:grid-cols-2">
                     <Button
                       size="lg"
                       onClick={() => handleRSVP("wo")}
                       disabled={rsvpLoading || pulse.userRSVP === "wo"}
-                      className="bg-[#FF0837] hover:bg-[#E6061F] text-white text-lg py-6 font-medium"
+                      className="bg-[#FF0837] hover:bg-[#E6061F] text-white text-sm md:text-lg py-3 md:py-6 font-medium"
                     >
                       {rsvpLoading ? (
-                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                        <Loader2 className="h-4 md:h-5 w-4 md:w-5 mr-2 animate-spin" />
                       ) : (
-                        <Calendar className="h-5 w-5 mr-2" />
+                        <Calendar className="h-4 md:h-5 w-4 md:w-5 mr-2" />
                       )}
                       {pulse.userRSVP === "wo" ? "✓ " : ""}Ja, wo {pulse.meetup.time.wednesday} in agenda
                     </Button>
@@ -384,7 +386,7 @@ export default function DashboardPage() {
                       variant="outline"
                       onClick={() => handleRSVP("za")}
                       disabled={rsvpLoading || pulse.userRSVP === "za"}
-                      className="border-2 border-[#FF0837] text-[#FF0837] hover:bg-[#FFF0F5] text-lg py-6 font-medium"
+                      className="border-2 border-[#FF0837] text-[#FF0837] hover:bg-[#FFF0F5] text-sm md:text-lg py-3 md:py-6 font-medium"
                     >
                       {pulse.userRSVP === "za" ? "✓ " : ""}Liever za {pulse.meetup.time.saturday}
                     </Button>
@@ -395,31 +397,31 @@ export default function DashboardPage() {
               {/* Pulse B - Community Response */}
               {pulse.type === "B" && (
                 <div>
-                  <p className="text-slate-600 mb-4">{pulse.prompt}</p>
+                  <p className="text-slate-600 mb-3 md:mb-4 text-sm md:text-base">{pulse.prompt}</p>
 
                   {/* Response Input */}
                   {!pulse.userResponse ? (
-                    <div className="bg-[#FFF0F5] rounded-xl p-6 mb-6 border border-[#FFE6ED]">
+                    <div className="bg-[#FFF0F5] rounded-xl p-3 md:p-6 mb-4 md:mb-6 border border-[#FFE6ED]">
                       <textarea
                         value={responseText}
                         onChange={(e) => setResponseText(e.target.value)}
                         placeholder="Deel jouw ervaring in 1 zin..."
                         maxLength={150}
-                        className="w-full p-4 rounded-lg border-2 border-[#FFE6ED] focus:border-[#FF0837] focus:outline-none resize-none bg-white"
+                        className="w-full p-3 md:p-4 rounded-lg border-2 border-[#FFE6ED] focus:border-[#FF0837] focus:outline-none resize-none bg-white text-sm md:text-base"
                         rows={3}
                       />
-                      <div className="flex items-center justify-between mt-3">
-                        <span className="text-sm text-slate-500">
+                      <div className="flex items-center justify-between mt-2 md:mt-3">
+                        <span className="text-xs md:text-sm text-slate-500">
                           {responseText.length}/150 karakters
                         </span>
                         <Button
                           onClick={handleResponseSubmit}
                           disabled={!responseText.trim() || responseLoading}
-                          className="bg-[#FF0837] hover:bg-[#E6061F] text-white font-medium"
+                          className="bg-[#FF0837] hover:bg-[#E6061F] text-white font-medium text-xs md:text-sm"
                         >
                           {responseLoading ? (
                             <>
-                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              <Loader2 className="h-3 md:h-4 w-3 md:w-4 mr-2 animate-spin" />
                               Delen...
                             </>
                           ) : (
@@ -429,17 +431,17 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-[#FFF0F5] rounded-xl p-6 mb-6 border-2 border-[#FFE6ED]">
-                      <p className="text-sm text-[#FF0837] font-medium mb-2">Jouw reactie:</p>
-                      <p className="text-lg text-slate-900 font-medium">"{pulse.userResponse}"</p>
+                    <div className="bg-[#FFF0F5] rounded-xl p-4 md:p-6 mb-4 md:mb-6 border-2 border-[#FFE6ED]">
+                      <p className="text-xs md:text-sm text-[#FF0837] font-medium mb-2">Jouw reactie:</p>
+                      <p className="text-base md:text-lg text-slate-900 font-medium">"{pulse.userResponse}"</p>
                     </div>
                   )}
 
                   {/* Community Responses */}
                   {pulse.responses && pulse.responses.length > 0 && (
                     <div>
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-lg font-semibold text-slate-900">
+                      <div className="flex items-center justify-between mb-3 md:mb-4 gap-2">
+                        <h4 className="text-base md:text-lg font-semibold text-slate-900">
                           Wat anderen accepteerden deze week
                         </h4>
                         <Button
@@ -447,7 +449,7 @@ export default function DashboardPage() {
                           variant="outline"
                           onClick={handleSimulateActivity}
                           disabled={aiSimulating}
-                          className="text-xs border-[#FFE6ED] text-[#FF0837] hover:bg-[#FFF0F5]"
+                          className="text-xs border-[#FFE6ED] text-[#FF0837] hover:bg-[#FFF0F5] whitespace-nowrap"
                         >
                           {aiSimulating ? (
                             <>
@@ -459,7 +461,7 @@ export default function DashboardPage() {
                           )}
                         </Button>
                       </div>
-                      <div className="space-y-3">
+                      <div className="space-y-2 md:space-y-3">
                         {pulse.responses.map((response) => {
                           const isOwnResponse = response.userId === user.id
                           const timeAgo = getTimeAgo(response.timestamp)
@@ -467,22 +469,22 @@ export default function DashboardPage() {
                           return (
                             <div
                               key={response.id}
-                              className={`p-4 rounded-lg ${
+                              className={`p-3 md:p-4 rounded-lg ${
                                 isOwnResponse
                                   ? "bg-[#FFF0F5] border-2 border-[#FFE6ED]"
                                   : "bg-white border border-slate-200"
                               }`}
                             >
-                              <div className="flex items-start gap-3">
+                              <div className="flex items-start gap-2 md:gap-3">
                                 <div className="flex-1">
-                                  <p className="text-slate-900">
+                                  <p className="text-sm md:text-base text-slate-900">
                                     <span className="font-semibold">{response.userName}</span>
                                     {isOwnResponse && (
                                       <span className="ml-2 text-xs text-[#FF0837] font-medium">(jij)</span>
                                     )}
                                   </p>
-                                  <p className="text-slate-700 mt-1">"{response.text}"</p>
-                                  <p className="text-xs text-slate-500 mt-2">{timeAgo}</p>
+                                  <p className="text-sm md:text-base text-slate-700 mt-1">"{response.text}"</p>
+                                  <p className="text-xs text-slate-500 mt-1 md:mt-2">{timeAgo}</p>
                                 </div>
                               </div>
                             </div>
@@ -498,22 +500,22 @@ export default function DashboardPage() {
         </Card>
 
         {/* Connection Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+        <div className="grid gap-3 md:gap-6 md:grid-cols-2 lg:grid-cols-3 mb-4 md:mb-8">
           {/* Warmth Widget */}
           <WarmthWidget user={user} />
 
           {/* Your Connections */}
           <Card className="border-[#FFE6ED]">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Heart className="h-6 w-6 text-[#FF0837]" />
-                <h3 className="text-xl font-bold text-slate-900">Jouw verbindingen</h3>
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                <Heart className="h-5 md:h-6 w-5 md:w-6 text-[#FF0837]" />
+                <h3 className="text-lg md:text-xl font-bold text-slate-900">Jouw verbindingen</h3>
               </div>
-              <div className="space-y-3">
-                <p className="text-3xl font-bold text-[#FF0837]">{user.connectionsCount} mensen</p>
-                <p className="text-slate-600">ontmoet in {user.meetupsAttended} bijeenkomsten</p>
-                <div className="pt-3 border-t border-slate-100">
-                  <p className="text-sm text-slate-500">
+              <div className="space-y-2 md:space-y-3">
+                <p className="text-2xl md:text-3xl font-bold text-[#FF0837]">{user.connectionsCount} mensen</p>
+                <p className="text-sm md:text-base text-slate-600">ontmoet in {user.meetupsAttended} bijeenkomsten</p>
+                <div className="pt-2 md:pt-3 border-t border-slate-100">
+                  <p className="text-xs md:text-sm text-slate-500">
                     Sinds je gestart bent, ben je van eenzaamheid naar verbinding gegaan 🌱
                   </p>
                 </div>
@@ -523,30 +525,30 @@ export default function DashboardPage() {
 
           {/* Coffee Buddy */}
           <Card className="border-[#FFE6ED] bg-[#FFF0F5]">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Coffee className="h-6 w-6 text-[#FF0837]" />
-                <h3 className="text-xl font-bold text-slate-900">Koffie-buddy</h3>
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                <Coffee className="h-5 md:h-6 w-5 md:w-6 text-[#FF0837]" />
+                <h3 className="text-lg md:text-xl font-bold text-slate-900">Koffie-buddy</h3>
               </div>
-              <p className="text-slate-700 mb-4">
+              <p className="text-sm md:text-base text-slate-700 mb-3 md:mb-4">
                 Deze week een koffie-buddy in je buurt? 25 min is genoeg.
               </p>
               <div className="grid gap-2 grid-cols-2">
                 <Button
                   onClick={handleBuddyMatch}
                   disabled={buddyMatching}
-                  className="bg-[#FF0837] hover:bg-[#E6061F] text-white font-medium"
+                  className="bg-[#FF0837] hover:bg-[#E6061F] text-white font-medium text-xs md:text-sm"
                 >
                   {buddyMatching ? (
                     <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      <Loader2 className="h-3 md:h-4 w-3 md:w-4 mr-2 animate-spin" />
                       Koppelen...
                     </>
                   ) : (
                     "Ja, koppel me"
                   )}
                 </Button>
-                <Button variant="ghost" className="text-slate-600">
+                <Button variant="ghost" className="text-slate-600 text-xs md:text-sm">
                   Niet nu
                 </Button>
               </div>
@@ -556,26 +558,26 @@ export default function DashboardPage() {
 
         {/* Upcoming in Your Circle */}
         <Card className="border-[#FFE6ED]">
-          <CardHeader>
-            <CardTitle className="text-xl">Volgende bijeenkomsten in jouw cirkel</CardTitle>
-            <CardDescription>Nog niet ingeschreven? Dat kan nog!</CardDescription>
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-lg md:text-xl">Volgende bijeenkomsten in jouw cirkel</CardTitle>
+            <CardDescription className="text-xs md:text-sm">Nog niet ingeschreven? Dat kan nog!</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+          <CardContent className="p-4 md:p-6 pt-0">
+            <div className="space-y-3 md:space-y-4">
               {meetups.map((meetup) => (
                 <div
                   key={meetup.id}
-                  className="flex items-start gap-4 p-4 rounded-lg hover:bg-[#FFF0F5] transition-colors"
+                  className="flex items-start gap-3 md:gap-4 p-3 md:p-4 rounded-lg hover:bg-[#FFF0F5] transition-colors"
                 >
-                  <Calendar className="h-5 w-5 text-[#FF0837] mt-1" />
-                  <div className="flex-1">
-                    <p className="font-semibold text-slate-900">{meetup.time} — {meetup.title}</p>
-                    <p className="text-sm text-slate-600">{meetup.location} • {meetup.attending} mensen komen</p>
+                  <Calendar className="h-4 md:h-5 w-4 md:w-5 text-[#FF0837] mt-1 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm md:text-base text-slate-900">{meetup.time} — {meetup.title}</p>
+                    <p className="text-xs md:text-sm text-slate-600">{meetup.location} • {meetup.attending} mensen komen</p>
                   </div>
                   <Button
                     size="sm"
                     variant={meetup.userRegistered ? "default" : "ghost"}
-                    className={meetup.userRegistered ? "bg-[#FF0837] text-white font-medium" : "text-[#FF0837]"}
+                    className={`${meetup.userRegistered ? "bg-[#FF0837] text-white font-medium" : "text-[#FF0837]"} text-xs md:text-sm whitespace-nowrap flex-shrink-0`}
                     onClick={() => !meetup.userRegistered && handleMeetupRSVP(meetup.id)}
                     disabled={meetupRegistering === meetup.id || meetup.userRegistered}
                   >
