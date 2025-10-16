@@ -296,6 +296,12 @@ export default function DashboardPage() {
                   </span>
                 )}
               </button>
+              <button
+                onClick={() => router.push("/whatsapp")}
+                className="text-white bg-[#FF0837] hover:bg-[#E6061F] px-4 py-2 rounded-full text-sm font-medium transition-colors"
+              >
+                WhatsApp Demo →
+              </button>
               <button className="p-2 hover:bg-slate-100 rounded-lg">
                 <User className="h-5 w-5 text-slate-600" />
               </button>
